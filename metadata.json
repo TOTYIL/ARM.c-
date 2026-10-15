@@ -1,6 +1,6 @@
 {
   "name": "ARM - Automation & Robotics Club",
-  "description": "The official website for the college Automation and Robotics Club (ARM).",
+  "description": "The official website for the college Automation Robotics Mechatronics Club (ARM).",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

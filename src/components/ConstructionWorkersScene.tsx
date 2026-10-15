@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { HardHat, Zap, CheckCircle2 } from 'lucide-react';
+import { HardHat, Zap } from 'lucide-react';
 
 interface WorkerState {
   id: string;
@@ -75,13 +75,13 @@ export default function ConstructionWorkersScene() {
   const weldSpeed = isTurbo ? '0.2s' : '0.8s';
   const wrenchSpeed = isTurbo ? '0.22s' : '0.9s';
   const gearSpeed = isTurbo ? '1.2s' : '4.5s';
-  const roverSpeed = isTurbo ? '2.5s' : '7s';
-  const architectSpeed = isTurbo ? '2.8s' : '8s';
+  const roverSpeed = isTurbo ? '2.5s' : '6.5s';
+  const architectSpeed = isTurbo ? '2.8s' : '7.5s';
   const beamSwaySpeed = isTurbo ? '1.4s' : '3.6s';
   const trolleySpeed = isTurbo ? '3.5s' : '9s';
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto my-4 select-none">
+    <div className="relative w-full max-w-4xl mx-auto my-3 select-none px-0.5">
       
       {/* CSS Animations */}
       <style>{`
@@ -101,62 +101,75 @@ export default function ConstructionWorkersScene() {
           100% { transform: rotate(360deg); }
         }
         @keyframes anim-rover-move {
-          0% { transform: translate(320px, 322px) scaleX(1); }
-          48% { transform: translate(460px, 322px) scaleX(1); }
-          50% { transform: translate(460px, 322px) scaleX(-1); }
-          98% { transform: translate(320px, 322px) scaleX(-1); }
-          100% { transform: translate(320px, 322px) scaleX(1); }
+          0% { transform: translate(320px, 322px); }
+          50% { transform: translate(450px, 322px); }
+          100% { transform: translate(320px, 322px); }
         }
         @keyframes anim-architect-pace {
-          0% { transform: translate(220px, 308px) scaleX(1); }
-          48% { transform: translate(310px, 308px) scaleX(1); }
-          50% { transform: translate(310px, 308px) scaleX(-1); }
-          98% { transform: translate(220px, 308px) scaleX(-1); }
-          100% { transform: translate(220px, 308px) scaleX(1); }
+          0% { transform: translate(220px, 308px); }
+          50% { transform: translate(300px, 308px); }
+          100% { transform: translate(220px, 308px); }
         }
         @keyframes anim-trolley-move {
           0% { transform: translateX(0px); }
-          50% { transform: translateX(80px); }
+          50% { transform: translateX(65px); }
           100% { transform: translateX(0px); }
         }
         @keyframes anim-beam-sway {
-          0% { transform: rotate(-1.8deg); }
-          50% { transform: rotate(1.8deg); }
-          100% { transform: rotate(-1.8deg); }
+          0% { transform: rotate(-2deg); }
+          50% { transform: rotate(2deg); }
+          100% { transform: rotate(-2deg); }
         }
         @keyframes anim-radio-arm {
           0% { transform: rotate(0deg); }
           50% { transform: rotate(-18deg); }
           100% { transform: rotate(0deg); }
         }
-        @keyframes anim-spark-burst {
-          0% { opacity: 1; transform: scale(0.6) translate(0, 0); }
-          100% { opacity: 0; transform: scale(1.6) translate(6px, -6px); }
-        }
       `}</style>
 
+      {/* Top Controls & Status Bar (Outside canvas so it never blocks workers on mobile) */}
+      <div className="flex items-center justify-between gap-2 mb-2 px-1 w-full">
+        <div className="flex items-center gap-1.5 font-mono text-[11px] sm:text-xs text-neutral-600 min-w-0 flex-1">
+          <HardHat className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+          <span className="truncate">Active Crew: 4 Engineers · 1 Bot</span>
+        </div>
+
+        <button
+          onClick={() => setIsTurbo(!isTurbo)}
+          className={`px-2.5 sm:px-3 py-1.5 text-[11px] sm:text-xs font-mono font-semibold rounded-sm transition-all duration-200 flex items-center gap-1 cursor-pointer shrink-0 shadow-xs ${
+            isTurbo 
+              ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/30 ring-2 ring-amber-400 animate-pulse' 
+              : 'bg-white hover:bg-neutral-100 text-neutral-800 border border-neutral-300'
+          }`}
+          title="Toggle high speed construction"
+        >
+          <Zap className={`w-3.5 h-3.5 ${isTurbo ? 'fill-white text-white' : 'text-amber-500'}`} />
+          <span className="whitespace-nowrap">{isTurbo ? 'TURBO (ON)' : 'TURBO BOOST'}</span>
+        </button>
+      </div>
+
       {/* Speech Bubble / Worker Dialogue Display */}
-      <div className="h-10 mb-2 flex items-center justify-center">
+      <div className="min-h-9 mb-2 flex items-center justify-center text-center px-1 w-full">
         {activeWorker ? (
           <motion.div
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 bg-neutral-900 text-white text-xs font-mono rounded-full shadow-md"
+            className="inline-flex items-center gap-1.5 px-3 py-1 bg-neutral-900 text-white text-[11px] sm:text-xs font-mono rounded-full shadow-md max-w-full overflow-hidden"
           >
-            <span className="font-semibold text-amber-400">{activeWorker.name} ({activeWorker.role}):</span>
-            <span>"{activeWorker.dialogue}"</span>
+            <span className="font-semibold text-amber-400 shrink-0">{activeWorker.name}:</span>
+            <span className="truncate">"{activeWorker.dialogue}"</span>
           </motion.div>
         ) : (
-          <span className="text-xs font-mono text-neutral-400 flex items-center gap-1.5">
-            <span className="inline-block w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-            Click any worker or the robot to see live crew logs
+          <span className="text-[11px] sm:text-xs font-mono text-neutral-400 flex items-center gap-1.5 truncate">
+            <span className="inline-block w-2 h-2 rounded-full bg-amber-500 animate-pulse shrink-0" />
+            <span className="truncate">Tap any worker or the robot helper to interact</span>
           </span>
         )}
       </div>
 
-      {/* Main SVG Construction Stage */}
-      <div className={`relative w-full aspect-[16/9] sm:aspect-[2/1] bg-white border ${isTurbo ? 'border-amber-400 shadow-md ring-2 ring-amber-400/20' : 'border-neutral-200 shadow-xs'} rounded-lg overflow-hidden transition-all duration-300`}>
+      {/* Main SVG Construction Stage - Fully visible on Mobile and Desktop */}
+      <div className={`relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[2/1] bg-white border ${isTurbo ? 'border-amber-400 shadow-md ring-2 ring-amber-400/20' : 'border-neutral-200 shadow-xs'} rounded-lg overflow-hidden transition-all duration-300`}>
         
         {/* Subtle Architectural Grid Background */}
         <div 
@@ -170,10 +183,10 @@ export default function ConstructionWorkersScene() {
           }}
         />
 
-        {/* SVG Drawing Canvas */}
+        {/* SVG Drawing Canvas with viewBox 20 10 760 375 to ensure 100% full visibility */}
         <svg 
-          viewBox="0 0 800 400" 
-          className="w-full h-full"
+          viewBox="20 10 760 375" 
+          className="w-full h-full block overflow-hidden"
           preserveAspectRatio="xMidYMid meet"
         >
           <defs>
@@ -423,27 +436,6 @@ export default function ConstructionWorkersScene() {
             <circle cx="31" cy="8" r="1.5" fill="#f59e0b" />
           </g>
         </svg>
-
-        {/* Footer info badge */}
-        <div className="absolute bottom-3 left-4 flex items-center gap-2 font-mono text-[11px] text-neutral-500 bg-white/95 backdrop-blur-xs px-2.5 py-1 border border-neutral-200 rounded-sm">
-          <HardHat className="w-3.5 h-3.5 text-amber-500" />
-          <span>Active Crew: 4 Engineers · 1 Autonomous Rover</span>
-        </div>
-
-        {/* Turbo Toggle Control */}
-        <div className="absolute top-3 right-4 flex items-center gap-2">
-          <button
-            onClick={() => setIsTurbo(!isTurbo)}
-            className={`px-3 py-1.5 text-xs font-mono font-semibold rounded-sm transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-xs ${
-              isTurbo 
-                ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/30 ring-2 ring-amber-400 animate-pulse' 
-                : 'bg-white hover:bg-neutral-100 text-neutral-800 border border-neutral-300'
-            }`}
-          >
-            <Zap className={`w-3.5 h-3.5 ${isTurbo ? 'fill-white text-white' : 'text-amber-500'}`} />
-            <span>{isTurbo ? 'TURBO SPEED (ACTIVE)' : 'TURBO BOOST'}</span>
-          </button>
-        </div>
       </div>
     </div>
   );
